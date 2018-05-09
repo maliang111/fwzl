@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="fwzl.dao"/>
+    <context:component-scan base-package="fwzl.service"/>
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/conf/jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="dsFilter" class="com.alibaba.druid.filter.stat.StatFilter"
+          lazy-init="true">
+        <description>状态过滤器</description>
+        <!-- 通过slowSqlMillis用来配置SQL慢的标准 -->
+        <property name="slowSqlMillis" value="3000" />
+        <!-- 以日志形式输出执行效率慢的SQL -->
+        <property name="logSlowSql" value="true" />
+        <!-- 通过mergeSql属性，合并SQL -->
+        <property name="mergeSql" value="true" />
+    </bean>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close" lazy-init="true">
+        <property name="driverClassName" value="${mysql.driver}"/>
+        <property name="url" value="${mysql.url}"/>
+        <property name="username" value="${mysql.username}"/>
+        <property name="password" value="${mysql.password}"/>
+        <property name="defaultAutoCommit" value="false"/>
+        <property name="proxyFilters">
+            <list>
+                <ref bean="dsFilter" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="WEB-INF/mapper/*-mapper.xml"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="fwzl.dao"/>
+    </bean>
+
+    <bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>

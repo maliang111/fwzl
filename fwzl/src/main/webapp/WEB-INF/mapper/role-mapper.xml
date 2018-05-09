@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fwzl.dao.RoleDao">
+    <select id="findRoleByUserId" resultType="map">
+        SELECT r.roleId roleId, roleName from T_ROLE r
+          JOIN T_USERROLE ur ON ur.roleId = r.roleId
+          WHERE ur.userId = #{userId}
+    </select>
+    <select id="findRoleByRoleName" resultType="_int">
+
+        SELECT roleId FROM T_ROLE WHERE roleName = #{roleName}
+
+    </select>
+    <select id="findRoleAuthByRoleId" resultType="_int">
+
+
+        SELECT moduleId from T_ROLEAUTH where roleId = #{roleId}
+
+
+    </select>
+</mapper>

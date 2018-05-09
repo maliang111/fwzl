@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fwzl.dao.UserDao">
+    <insert id="saveUser" keyProperty="user.id" useGeneratedKeys="true">
+
+        INSERT INTO T_USER (username, realName, password, salt, sort, email, createdUser, createdTime)
+        VALUES (#{user.username}, #{user.realName}, #{user.password}, #{user.salt}, #{user.sort}, #{user.email}, #{user.realName}, now())
+
+    </insert>
+    <insert id="saveUserRole">
+
+        INSERT INTO T_USERROLE (userId, roleId) VALUES 
+        <foreach collection="roleIds" item="id" separator=",">
+            (#{userId}, #{id})
+        </foreach>
+
+    </insert>
+    <insert id="saveUserAuth">
+
+        INSERT INTO T_USERAUTH (userId, moduleId) VALUES
+        <foreach collection="moduleIds" item="moduleId" separator=",">
+            (#{userId}, #{moduleId})
+        </foreach>
+
+
+    </insert>
+    <update id="updateUser" parameterType="fwzl.entity.User">
+        UPDATE T_USER SET
+          realName = #{user.realName},
+          email = #{user.email},
+          mobile = #{user.mobile},
+          gender = #{user.gender},
+          birthday = #{user.birthday},
+          modifiedTime = #{user.modifiedTime},
+          modifiedUser = #{user.modifiedUser} WHERE id = #{user.id}
+    </update>
+
+
+    <update id="updatePassword">
+
+        UPDATE T_USER SET
+          password = #{password}
+          WHERE id = #{userId}
+
+    </update>
+    <delete id="deleteUser">
+
+        DELETE FROM T_USER WHERE id = #{id}
+
+    </delete>
+    <delete id="deleteUserRole">
+
+        DELETE FROM T_USERROLE WHERE userId = #{id}
+
+    </delete>
+    <delete id="deleteUserAuth">
+
+        DELETE FROM t_userauth WHERE userId = #{id}
+
+    </delete>
+    <delete id="deleteUsers">
+
+        DELETE FROM T_USER WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+    <delete id="deleteUserRoles">
+
+        DELETE FROM T_USERROLE WHERE userId IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+
+    </delete>
+    <delete id="deleteUserAuths">
+
+        DELETE FROM t_userauth WHERE userId IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+
+    </delete>
+
+
+    <select id="findUserByName" resultType="fwzl.entity.User">
+      SELECT id, username, realName, password, salt, email, birthday, gender, mobile
+       FROM T_USER WHERE username = #{username}
+    </select>
+
+
+    <select id="getUsers" resultType="fwzl.entity.User">
+
+        SELECT id, username, realName, gender, birthday, email, mobile, valid
+        FROM T_USER
+        <where>
+            <if test="params.username != null and params.username != ''">
+                AND username LIKE CONCAT('%' , #{params.username} , '%')
+            </if>
+            <if test="params.realName != null and params.realName != ''">
+                AND realName LIKE CONCAT('%', #{params.realName}, '%')
+            </if>
+            <if test="params.birthday != null">
+                AND birthday > #{params.birthday}
+            </if>
+            <if test="params.gender != null and params.gender != ''">
+                AND gender = #{params.gender}
+            </if>
+        </where>
+        ORDER BY sort
+        LIMIT #{params.start}, #{params.limit}
+    </select>
+    <select id="getUserCounts" resultType="int">
+
+        SELECT COUNT(*)
+        FROM T_USER
+        <where>
+            <if test="params.username != null and params.username != ''">
+                AND username LIKE CONCAT('%' , #{params.username} , '%')
+            </if>
+            <if test="params.realName != null and params.realName != ''">
+                AND realName LIKE CONCAT('%', #{params.realName}, '%')
+            </if>
+            <if test="params.birthday != null">
+                AND birthday > #{params.birthday}
+            </if>
+            <if test="params.gender != null and params.gender != ''">
+                AND gender = #{params.gender}
+            </if>
+        </where>
+    </select>
+
+    <select id="getUser" resultType="fwzl.entity.User">
+
+        SELECT  username, realName, email, mobile, gender, birthday, valid
+          FROM T_USER WHERE id = #{userId}
+
+    </select>
+    <select id="getMaxSort" resultType="int">
+
+        SELECT MAX(sort) FROM T_USER
+
+    </select>
+
+
+</mapper>

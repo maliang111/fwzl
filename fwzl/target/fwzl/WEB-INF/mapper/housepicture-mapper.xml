@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fwzl.dao.HousePictureDao">
+    <insert id="saveHousePictures">
+
+        INSERT INTO T_HOUSEPICTURE (houseId, pictureId, pictureName, pictureType, createdTime, createdUser)
+          VALUES
+          <foreach collection="housePictures" item="housePicture" separator=",">
+              (#{housePicture.houseId}, #{housePicture.pictureId}, #{housePicture.pictureName}, #{housePicture.pictureType}, NOW(), NOW())
+          </foreach>
+    </insert>
+    <delete id="deleteHousePicture">
+
+        DELETE FROM t_housepicture WHERE houseId = #{houseId}
+
+    </delete>
+    <delete id="deleteHousePictures">
+        
+        DELETE FROM t_housepicture WHERE houseId IN 
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        
+        
+    </delete>
+
+    <select id="getMaxPictureId" resultType="int">
+
+        SELECT max(pictureId) FROM T_HOUSEPICTURE WHERE houseId = #{houseId}
+
+    </select>
+    <select id="saveHousePicture" parameterType="fwzl.entity.HousePicture">
+
+        INSERT INTO T_HOUSEPICTURE (houseId, pictureId, pictureName, pictureType, createdTime, createdUser)
+          VALUES (#{housePicture.houseId}, #{housePicture.pictureId}, #{housePicture.pictureName}, #{housePicture.pictureType}, NOW(), NOW())
+
+    </select>
+    <select id="findHousePicture" resultType="string">
+        SELECT pictureName FROM T_HOUSEPICTURE
+          WHERE houseId = #{houseId}
+    </select>
+</mapper>

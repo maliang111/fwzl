@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tabbar>
+    <row>
+        <tab id="orderInfo">账目信息详情</tab>
+        <tab id="houseInfo">房屋信息</tab>
+        <tab id="ownerInfo">房屋拥有者信息</tab>
+        <tab id="tenantInfo">租赁者信息</tab>
+    </row>
+</tabbar>

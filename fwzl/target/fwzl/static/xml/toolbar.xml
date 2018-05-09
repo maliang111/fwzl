@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<toolbar>
+    <item id="new" type="button" text="新增"></item>
+    <item id="sep1" type="separator"></item>
+    <item id="save" type="button" text="保存"></item>
+    <item id="sep2" type="separator"></item>
+</toolbar>

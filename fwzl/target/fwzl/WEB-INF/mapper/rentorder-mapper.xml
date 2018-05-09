@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fwzl.dao.RentOrderDao">
+    <insert id="saveRentOrder" useGeneratedKeys="true" keyProperty="params.orderId">
+
+        INSERT INTO T_RENTORDER
+        (houseId, ownerId, tenantId, leaseTime, leaseLength, deposit, yjje, sjje, wjje, dueDate, createdTime, createdUser, sort)
+        VALUES (#{params.houseId}, #{params.ownerId}, #{params.tenantId}, #{params.leaseTime}, #{params.leaseLength},
+                #{params.deposit}, #{params.yjje}, #{params.sjje}, #{params.wjje}, #{params.dueDate},
+                #{params.createdTime}, #{params.createdUser}, #{params.sort})
+
+    </insert>
+    <update id="updateRentOrder">
+
+        UPDATE T_RENTORDER
+        SET
+          tenantId = #{params.tenantId},
+          leaseTime = #{params.leaseTime},
+          leaseLength = #{params.leaseLength},
+          deposit = #{params.deposit},
+          yjje = #{params.yjje},
+          sjje = #{params.sjje},
+          wjje = #{params.wjje},
+          dueDate = #{params.dueDate},
+          modifiedTime = #{params.modifiedTime},
+          modifiedUser = #{params.modifiedUser}
+        WHERE orderId = #{params.orderId}
+    </update>
+    <delete id="deleteZmxx">
+
+        DELETE FROM T_RENTORDER WHERE orderId = #{orderId}
+
+    </delete>
+    <delete id="deleteZmxxByHouseId">
+
+        DELETE FROM T_RENTORDER WHERE houseId IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+
+    </delete>
+    <delete id="deleteZmxxByUserId">
+
+        DELETE FROM T_RENTORDER WHERE ownerId = #{userId} OR tenantId = #{userId}
+
+    </delete>
+    <select id="findZmxx" resultType="map">
+
+        SELECT o.orderId orderId, o.houseId houseId, h.houseCode houseCode, u1.realName owner, u2.realName tenant,
+              o.leaseTime leaseTime, o.leaseLength leaseLength, o.deposit deposit, o.yjje yjje, o.sjje sjje,
+              o.wjje wjje, o.dueDate dueDate, o.ownerId ownerId, o.tenantId tenantId
+          FROM T_RENTORDER o
+          JOIN T_HOUSE h ON h.houseId = o.houseId
+          JOIN T_USER u1 ON u1.id = o.ownerId
+          JOIN T_USER u2 ON u2.id = o.tenantId
+          <where>
+              <if test="params.houseCode != null and params.houseCode != ''">
+                  AND h.houseCode LIKE CONCAT('%', #{params.houseCode},'%')
+              </if>
+              <if test="params.tenantName != null and params.tenantName != ''">
+                  AND u2.realName LIKE CONCAT('%', #{params.tenantName},'%')
+              </if>
+              <if test="params.leaseTime1 != null">
+                  AND o.leaseTime &gt;= #{params.leaseTime1}
+              </if>
+              <if test="params.leaseTime2 != null">
+                  AND o.leaseTime &lt;= #{params.leaseTime2}
+              </if>
+          </where>
+          ORDER BY o.sort DESC
+          LIMIT #{params.start}, #{params.limit}
+
+    </select>
+    <select id="findZmxxCount" resultType="_int">
+
+
+        SELECT COUNT(*)
+        FROM T_RENTORDER o
+        JOIN T_HOUSE h ON h.houseId = o.houseId
+        JOIN T_USER u1 ON u1.id = o.ownerId
+        JOIN T_USER u2 ON u2.id = o.tenantId
+        <where>
+            <if test="params.houseCode != null and params.houseCode != ''">
+                AND h.houseCode LIKE CONCAT('%', #{params.houseCode},'%')
+            </if>
+            <if test="params.tenantName != null and params.tenantName != ''">
+                AND u2.realName LIKE CONCAT('%', #{params.tenantName},'%')
+            </if>
+            <if test="params.leaseTime1 != null">
+                AND o.leaseTime &gt;= #{params.leaseTime1}
+            </if>
+            <if test="params.leaseTime2 != null">
+                AND o.leaseTime &lt;= #{params.leaseTime2}
+            </if>
+        </where>
+
+    </select>
+    <select id="findZmxxById" resultType="map">
+
+        SELECT o.orderId orderId, o.houseId houseId, h.houseCode houseCode, o.ownerId ownerId, o.tenantId tenantId,
+              u1.realName ownerName, u2.realName tenant, h.address address,
+              o.leaseTime leaseTime, o.leaseLength leaseLength, o.deposit deposit, o.yjje yjje, o.sjje sjje,
+              o.wjje wjje, o.dueDate dueDate, o.ownerId ownerId, o.tenantId tenantId
+          FROM T_RENTORDER o
+          JOIN T_HOUSE h ON h.houseId = o.houseId
+          JOIN T_USER u1 ON u1.id = o.ownerId
+          JOIN T_USER u2 ON u2.id = o.tenantId
+          WHERE o.orderId = #{orderId}
+
+    </select>
+    <select id="findMaxSort" resultType="_int">
+
+        SELECT MAX(sort) FROM T_RENTORDER
+
+    </select>
+
+
+</mapper>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fwzl.dao.HouseDao">
+    <insert id="saveHouse" useGeneratedKeys="true" keyProperty="house.houseId">
+
+        INSERT INTO T_HOUSE
+        (ownerId, houseCode, address, residence, size, leaseTime, rent, note, isLeased, sort, createdTime, createdUser)
+        VALUES (#{house.ownerId}, #{house.houseCode}, #{house.address}, #{house.residence}, #{house.size},
+         #{house.leaseTime}, #{house.rent}, #{house.note}, #{house.isLeased}, #{house.sort}, NOW(), #{house.createdUser})
+
+
+    </insert>
+
+
+
+    <update id="updateHouse" parameterType="fwzl.entity.House">
+
+        UPDATE T_HOUSE SET
+          address = #{house.address},
+          residence = #{house.residence},
+          size = #{house.size},
+          leaseTime = #{house.leaseTime},
+          rent = #{house.rent},
+          note = #{house.note},
+          isLeased = #{house.isLeased},
+          modifiedTime = now(),
+          modifiedUser = #{house.modifiedUser}
+          WHERE houseId = #{house.houseId}
+
+    </update>
+    <update id="updateHouseRentState">
+
+        UPDATE T_HOUSE SET isLeased = #{state} WHERE houseId = #{houseId}
+
+    </update>
+    <delete id="deleteHouse">
+
+        DELETE FROM T_HOUSE WHERE houseId = #{houseId}
+
+    </delete>
+    <delete id="deleteHouses">
+
+      DELETE FROM T_HOUSE
+      WHERE houseId in
+      <foreach collection="ids" item="id" open="(" close=")" separator=",">
+          #{id}
+      </foreach>
+    </delete>
+    <delete id="deleteHouseByOwner">
+
+        DELETE FROM T_HOUSE WHERE ownerId = #{ownerId}
+
+    </delete>
+
+
+    <select id="findHouseById" resultType="map">
+        SELECT houseId, u.realName ownerName, address, residence, size, leaseTime, rent, note, isLeased
+        FROM T_HOUSE h
+          JOIN T_USER u ON h.ownerId = u.id
+        WHERE houseId = #{houseId}
+    </select>
+    <select id="findHouses" resultType="map">
+
+        SELECT h.houseId, h.houseCode houseCode,
+          h.ownerId ownerId,
+        u.realName ownerName, address, residence, size, leaseTime, rent, note, isLeased,
+          pictureId, pictureName
+          FROM T_HOUSE h
+          LEFT OUTER JOIN T_USER u ON h.ownerId = u.id
+          LEFT OUTER JOIN (select * from T_HOUSEPICTURE where pictureId = 1) p ON h.houseId = p.houseId
+            <where>
+                <if test="params.ownerId != 0">
+                    AND h.ownerId = #{params.ownerId}
+                </if>
+                <if test="params.rent1 != 0">
+                    AND h.rent &gt;= #{params.rent1}
+                </if>
+                <if test="params.rent2 != 0">
+                    AND h.rent &lt;= #{params.rent2}
+                </if>
+                <if test="params.isLeased != null and params.isLeased != ''">
+                    AND h.isLeased = #{params.isLeased}
+                </if>
+                <if test="params.residence != null and params.residence != ''">
+                    AND h.residence LIKE CONCAT('%', #{params.residence}, '%')
+                </if>
+                <if test="params.address != null and params.address != ''">
+                    AND h.address LIKE CONCAT('%', #{params.address}, '%')
+                </if>
+                <if test="params.houseCode != null and params.houseCode != ''">
+                    AND h.houseCode LIKE CONCAT('%', #{params.houseCode},'%')
+                </if>
+                <if test="params.ownerName != null and params.ownerName != ''">
+                    AND u.realName LIKE CONCAT('%', #{params.ownerName},'%')
+                </if>
+                <if test="params.leaseTime1 != null">
+                  AND h.leaseTime &gt;= #{params.leaseTime1}
+                </if>
+
+                <if test="params.leaseTime2 != null">
+                    AND h.leaseTime &lt;= #{params.leaseTime2}
+                </if>
+            </where>
+          ORDER BY h.sort
+          LIMIT #{params.start}, #{params.limit}
+    </select>
+
+    <select id="getHouseCount" resultType="int">
+        SELECT count(1)
+        FROM T_HOUSE h
+        LEFT OUTER JOIN T_USER u ON h.ownerId = u.id
+        <where>
+            <if test="params.ownerId != 0">
+                AND h.ownerId = #{params.ownerId}
+            </if>
+            <if test="params.rent1 != 0">
+                AND h.rent &gt;= #{params.rent1}
+            </if>
+            <if test="params.rent2 != 0">
+                AND h.rent &lt;= #{params.rent2}
+            </if>
+            <if test="params.residence != null and params.residence != ''">
+                AND h.residence LIKE CONCAT('%', #{params.residence}, '%')
+            </if>
+            <if test="params.address != null and params.address != ''">
+                AND h.address LIKE CONCAT('%', #{params.address}, '%')
+            </if>
+            <if test="params.houseCode != null and params.houseCode != ''">
+                AND h.houseCode LIKE CONCAT('%', #{params.houseCode},'%')
+            </if>
+            <if test="params.ownerName != null and params.ownerName != ''">
+                AND u.realName LIKE CONCAT('%', #{params.ownerName},'%')
+            </if>
+            <if test="params.leaseTime1 != null">
+                AND h.leaseTime &gt;= #{params.leaseTime1}
+            </if>
+            <if test="params.leaseTime2 != null">
+                AND h.leaseTime &lt;= #{params.leaseTime2}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getMaxSort" resultType="int">
+        SELECT MAX(sort) from T_HOUSE
+    </select>
+
+    <select id="findHouseIdByOwnerId" resultType="int">
+
+        SELECT houseId FROM T_HOUSE WHERE ownerId = #{ownerId}
+
+    </select>
+    <select id="findHouseIdByOwnerIds" resultType="int">
+
+        SELECT DISTINCT houseId FROM T_HOUSE WHERE ownerId IN
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+
+    </select>
+
+    <select id="findHouseGroupByLeaseTime" resultType="map">
+
+      SELECT COUNT(*) houseCount, leaseTime FROM T_HOUSE GROUP BY leaseTime ORDER BY leaseTime
+
+    </select>
+    <select id="findHouseGroupByOwner" resultType="map">
+
+        SELECT COUNT(*) houseCount, u.realName ownerName
+        FROM T_HOUSE h
+        JOIN T_USER u ON u.id = h.ownerId GROUP BY h.ownerId
+
+    </select>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fwzl.dao.ModuleDao">
+    <select id="findModuleByUserId" resultType="fwzl.entity.Module">
+      SELECT  m.moduleId, moduleName, url, parentId FROM T_MODULE m
+        JOIN T_USERAUTH ua ON m.moduleId = ua.moduleId
+        WHERE ua.userId = #{userId} AND  m.valid = '1'
+    </select>
+
+    <select id="findModuleByRoleId" resultType="fwzl.entity.Module">
+        SELECT m.moduleId, moduleName, url, parentId FROM T_MODULE m
+          JOIN T_ROLEAUTH ra ON m.moduleId = ra.moduleId
+          WHERE ra.roleId = #{roleId} AND  m.valid = '1'
+    </select>
+    <select id="findModuleByUserRole" resultType="fwzl.entity.Module">
+        SELECT m.moduleId, moduleName, url, parentId FROM T_MODULE m
+          JOIN T_ROLEAUTH ra ON m.moduleId = ra.moduleId
+          JOIN T_USERROLE ur ON ra.roleId = ur.roleId
+          WHERE ur.userId = #{userId} AND  m.valid = '1'
+    </select>
+    <select id="findModuleById" resultType="fwzl.entity.Module">
+
+        SELECT url FROM T_MODULE WHERE moduleId = #{moduleId}
+
+    </select>
+
+
+</mapper>
