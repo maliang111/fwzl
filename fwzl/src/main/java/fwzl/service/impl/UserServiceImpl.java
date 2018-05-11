@@ -276,58 +276,59 @@ public class UserServiceImpl implements UserService {
         String[] idArray = ids.split(",");
         Integer[] _ids = new Integer[idArray.length];
         for (int i = 0; i < idArray.length; i++) {
-            _ids[i] = Integer.parseInt(StringUtils.trim(idArray[i]));
+//            _ids[i] = Integer.parseInt(StringUtils.trim(idArray[i]));
+            deleteUser(StringUtils.trim(idArray[i]));
         }
 
-        int rtn = userDao.deleteUserAuths(_ids);
-        if (rtn < 0) {
-            throw new RuntimeException("删除权限失败");
-        }
-
-        rtn = userDao.deleteUserRoles(_ids);
-
-        if (rtn < 0) {
-            throw new RuntimeException("删除角色失败");
-        }
-
-        rtn = userPictureDao.deleteUserPictures(_ids);
-
-        if (rtn < 0) {
-            throw new RuntimeException("删除图片失败");
-        }
-
-
-        List<Integer> _houseIds = houseDao.findHouseIdByOwnerIds(_ids);
-
-        Integer[] houseIds = _houseIds.toArray(new Integer[]{});
-
-        rtn = rentOrderDao.deleteZmxxByHouseId(houseIds);
-
-        if (rtn < 0) {
-            throw new RuntimeException("删除账目失败");
-        }
-
-        rtn = housePictureDao.deleteHousePictures(houseIds);
-        if (rtn < 0) {
-            throw new RuntimeException("删除房屋图片失败");
-        }
-
-        rtn = houseDao.deleteHouses(houseIds);
-        if (rtn < 0) {
-            throw new RuntimeException("删除房屋失败");
-        }
-
-        for (int i = 0; i < _ids.length; i++) {
-            rtn = rentOrderDao.deleteZmxxByUserId(_ids[i]);
-            if (rtn < 0) {
-                throw new RuntimeException("删除账目失败");
-            }
-
-        }
-        rtn = userDao.deleteUsers(_ids);
-        if (rtn < 0) {
-            throw new RuntimeException("删除用户失败");
-        }
+//        int rtn = userDao.deleteUserAuths(_ids);
+//        if (rtn < 0) {
+//            throw new RuntimeException("删除权限失败");
+//        }
+//
+//        rtn = userDao.deleteUserRoles(_ids);
+//
+//        if (rtn < 0) {
+//            throw new RuntimeException("删除角色失败");
+//        }
+//
+//        rtn = userPictureDao.deleteUserPictures(_ids);
+//
+//        if (rtn < 0) {
+//            throw new RuntimeException("删除图片失败");
+//        }
+//
+//
+//        List<Integer> _houseIds = houseDao.findHouseIdByOwnerIds(_ids);
+//
+//        Integer[] houseIds = _houseIds.toArray(new Integer[]{});
+//
+//        rtn = rentOrderDao.deleteZmxxByHouseId(houseIds);
+//
+//        if (rtn < 0) {
+//            throw new RuntimeException("删除账目失败");
+//        }
+//
+//        rtn = housePictureDao.deleteHousePictures(houseIds);
+//        if (rtn < 0) {
+//            throw new RuntimeException("删除房屋图片失败");
+//        }
+//
+//        rtn = houseDao.deleteHouses(houseIds);
+//        if (rtn < 0) {
+//            throw new RuntimeException("删除房屋失败");
+//        }
+//
+//        for (int i = 0; i < _ids.length; i++) {
+//            rtn = rentOrderDao.deleteZmxxByUserId(_ids[i]);
+//            if (rtn < 0) {
+//                throw new RuntimeException("删除账目失败");
+//            }
+//
+//        }
+//        rtn = userDao.deleteUsers(_ids);
+//        if (rtn < 0) {
+//            throw new RuntimeException("删除用户失败");
+//        }
 
     }
 }

@@ -34,7 +34,7 @@
                       type="date"
                       value-format="yyyy-MM-dd"
                       format="yyyy-MM-dd"
-                      placeholder="选择日期">
+                      placeholder="选择日期" :readonly="operation == 'view'">
                     </el-date-picker>
                   </el-form-item>
                 </el-col>

@@ -79,10 +79,34 @@ function doLoadToolbar() {
 
 
 function doCheck() {
+    if (!jq("#zmglInfoForm :input[name=houseCode]").val()) {
+        return false;
+    }
+    if (!jq("#zmglInfoForm :input[name=ownerName]").val()) {
+        return false;
+    }
+    if (!jq("#zmglInfoForm :input[name=address]").val()) {
+        return false;
+    }
+    if (!jq("#zmglInfoForm :input[name=tenant]").val()) {
+        return false;
+    }
+    if (!jq("#zmglInfoForm :input[name=leaseTime]").val()) {
+        return false;
+    }
+    if (!jq("#zmglInfoForm :input[name=leaseLength]").val()) {
+        return false;
+    }
+    if (!jq("#zmglInfoForm :input[name=deposit]").val()) {
+        return false;
+    }
     if (!doCheckYjje()) {
         return false;
     }
     if (!doCheckSjje()) {
+        return false;
+    }
+    if (!jq("#zmglInfoForm :input[name=dueDate]").val()) {
         return false;
     }
     return true;
@@ -92,6 +116,7 @@ function doCheck() {
 function doSave() {
 
     if (!doCheck()) {
+        alert('所有项均必填，请检查');
         return;
     }
 
