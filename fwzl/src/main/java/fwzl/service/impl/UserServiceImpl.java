@@ -209,7 +209,7 @@ public class UserServiceImpl implements UserService {
             String gender = user.getGender();
             if (Constant.GENDER_MALE.equals(gender)) {
                 user.setGender("男");
-            } else {
+            } else if (Constant.GENDER_FEMALE.equals(gender)) {
                 user.setGender("女");
             }
         }
